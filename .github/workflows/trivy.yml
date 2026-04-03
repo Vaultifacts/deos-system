@@ -1,0 +1,35 @@
+name: trivy
+
+"on":
+  push:
+    branches:
+      - main
+      - deos-bootstrap
+  pull_request:
+
+jobs:
+  trivy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Run Trivy vulnerability, misconfiguration, and secret scan
+        uses: aquasecurity/trivy-action@57a97c7
+        with:
+          scan-type: fs
+          scan-ref: .
+          format: sarif
+          output: trivy-results.sarif
+          severity: CRITICAL,HIGH,MEDIUM
+          scanners: vuln,misconfig,secret
+        continue-on-error: true
+
+      - name: Upload Trivy SARIF
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: trivy-results.sarif

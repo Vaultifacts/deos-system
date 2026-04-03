@@ -1,0 +1,62 @@
+name: Bug
+description: Structured bug report
+title: "[Bug] "
+labels:
+  - deos:type:bug
+  - deos:state:triage
+body:
+  - type: textarea
+    id: observed
+    attributes:
+      label: Observed behavior
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+
+  - type: textarea
+    id: repro
+    attributes:
+      label: Reproduction steps
+      description: Exact steps only
+    validations:
+      required: true
+
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence
+      description: Logs, screenshots, workflow links, output
+    validations:
+      required: true
+
+  - type: textarea
+    id: suspected
+    attributes:
+      label: Suspected area or root cause
+    validations:
+      required: true
+
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Severity
+      options:
+        - Critical
+        - High
+        - Medium
+        - Low
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: launch
+    attributes:
+      label: Launch impact
+      options:
+        - label: This is a launch blocker
