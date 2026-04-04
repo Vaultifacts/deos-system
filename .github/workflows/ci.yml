@@ -1,0 +1,55 @@
+name: ci
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - deos-bootstrap
+
+jobs:
+  validate-files:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate JSON
+        run: |
+          find . -type f -name "*.json" -print0 | xargs -0 -I{} sh -c 'jq empty "{}"'
+
+      - name: Validate YAML
+        run: |
+          python - <<'PY'
+          import sys
+          from pathlib import Path
+          import yaml
+
+          failures = []
+          for path in Path(".").rglob("*.yml"):
+              try:
+                  with open(path, "r", encoding="utf-8") as f:
+                      yaml.safe_load(f)
+              except Exception as e:
+                  failures.append(f"{path}: {e}")
+
+          for path in Path(".").rglob("*.yaml"):
+              try:
+                  with open(path, "r", encoding="utf-8") as f:
+                      yaml.safe_load(f)
+              except Exception as e:
+                  failures.append(f"{path}: {e}")
+
+          if failures:
+              print("\n".join(failures))
+              sys.exit(1)
+          print("YAML validation passed.")
+          PY
+
+      - name: Validate Markdown files exist
+        run: |
+          test -f CLAUDE.md
+          test -f docs/worklog.md
+          test -f docs/launch-readiness.md
+          test -f docs/state.md

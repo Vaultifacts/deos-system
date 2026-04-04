@@ -1,0 +1,54 @@
+name: Feature
+description: Structured feature request for DEOS work
+title: "[Feature] "
+labels:
+  - deos:type:feature
+  - deos:state:triage
+body:
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: What needs to be built?
+    validations:
+      required: true
+
+  - type: textarea
+    id: value
+    attributes:
+      label: User or system value
+      description: Why does this matter?
+    validations:
+      required: true
+
+  - type: textarea
+    id: scope
+    attributes:
+      label: Scope
+      description: In scope and out of scope
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: What proves this is done?
+    validations:
+      required: true
+
+  - type: textarea
+    id: verification
+    attributes:
+      label: Verification plan
+      description: Checks, tests, or review steps
+    validations:
+      required: true
+
+  - type: textarea
+    id: failure
+    attributes:
+      label: Failure checkpoints
+      description: How will we know this is not done correctly?
+    validations:
+      required: true

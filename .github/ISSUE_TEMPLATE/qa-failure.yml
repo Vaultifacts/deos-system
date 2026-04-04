@@ -1,0 +1,42 @@
+name: QA Failure
+description: Structured QA or verification failure
+title: "[QA] "
+labels:
+  - deos:type:qa
+  - deos:state:triage
+body:
+  - type: input
+    id: check_name
+    attributes:
+      label: Failing check or test name
+    validations:
+      required: true
+
+  - type: textarea
+    id: failure
+    attributes:
+      label: Failure summary
+    validations:
+      required: true
+
+  - type: textarea
+    id: repro
+    attributes:
+      label: Reproduction or rerun steps
+    validations:
+      required: true
+
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence
+      description: Workflow URL, logs, or output
+    validations:
+      required: true
+
+  - type: textarea
+    id: verification
+    attributes:
+      label: Verification plan
+    validations:
+      required: true

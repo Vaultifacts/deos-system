@@ -1,0 +1,13 @@
+name: e2e
+
+on:
+  workflow_dispatch:
+
+jobs:
+  placeholder:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Placeholder
+        run: |
+          echo "E2E workflow placeholder."
+          echo "Replace with real Playwright or app-specific E2E once the target app exists."
