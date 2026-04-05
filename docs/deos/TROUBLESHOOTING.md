@@ -1,150 +1,76 @@
-# Troubleshooting
+# DEOS Troubleshooting
 
-## Purpose
+## 1. PR shows `Expected — Waiting for status to be reported`
 
-This document defines the canonical troubleshooting flow for DEOS ruleset/check enforcement problems.
+### Most likely causes
+- required check name mismatch
+- wrong source selected for required check
+- ruleset changed after PR creation and PR has not rerun
+- stale required checks remain in ruleset
 
----
+### Investigation steps
+1. Open PR checks list
+2. Record actual check names exactly
+3. Record source/integration if visible
+4. Compare to ruleset required checks
+5. Update ruleset if mismatch exists
+6. Trigger fresh PR evaluation if needed
 
-## Problem: Check stuck on “Expected — Waiting for status to be reported”
+### Do not do first
+- do not immediately rename workflows
+- do not assume YAML is wrong
+- do not add duplicate required checks
 
-### Root cause
-Usually one of:
+## 2. VSCode says workflow YAML is broken but GitHub runs it
+This can be caused by stale editor diagnostics or extension behavior.
 
-1. required check name does not exactly match the emitted check
-2. required check source does not exactly match the emitted source
-3. PR has not been freshly re-evaluated after a ruleset change
+### Rule
+If:
+- file on disk is valid
+- GitHub Actions runs successfully
 
-### Verification steps
+then GitHub is the execution truth.
 
-1. Open the PR Checks tab
-2. Record the exact emitted check names
-3. Record the exact source for each check
-4. Open the ruleset
-5. Compare the ruleset entries against:
-   - exact name
-   - exact source
+## 3. CodeQL/Trivy names do not match workflow filenames
+This is expected when results are surfaced through code scanning / GitHub Advanced Security.
 
-### Corrective action
+### Rule
+Use the actual PR-emitted check names in the ruleset.
 
-Remove any invalid required checks such as:
+## 4. Dependabot label warning appears
+Cause:
+- `dependabot.yml` references a label that does not exist
 
-- `ci`
-- `codeql`
-- `trivy`
+### Fix
+Either:
+- create the missing label
+- or remove/replace the label in `dependabot.yml`
 
-Retain only the canonical required checks:
-
-- `ci / validate-files` → GitHub Actions
-- `Code scanning results / CodeQL` → GitHub Advanced Security
-- `Code scanning results / Trivy` → GitHub Advanced Security
-- `semgrep` → GitHub Actions
-- `readiness-check` → GitHub Actions
-
-Then trigger fresh evaluation by:
-
-1. updating the branch
-2. rebasing the branch
-3. or closing/reopening the PR
-
----
-
-## Problem: A required check never appears
-
-### Root cause
+## 5. Workflow exists but does not block merge
 Possible causes:
+- not listed as required in ruleset
+- wrong source selected
+- check name mismatch
+- check did not run on PR head commit
 
-1. workflow did not run
-2. workflow trigger conditions were not met
-3. emitted check name differs from assumption
-4. scan results are surfaced through a different source than expected
+## 6. Project state drifts from issue state
+Cause:
+- manual updates inconsistent
+- no project automation configured for that field
+- assumptions based on labels instead of verified project fields
 
-### Verification steps
+### Rule
+When issue and project disagree, reconcile immediately.
 
-1. Confirm workflow run exists in Actions
-2. Confirm workflow completed
-3. Confirm check appears in PR Checks tab
-4. Confirm exact check name and source
-5. Confirm ruleset uses those exact values
+## 7. Branch protection blocks everything
+Likely causes:
+- non-existent required checks
+- review requirements enabled accidentally
+- stale checks left in ruleset
 
-### Failure checkpoint
-
-If the workflow ran but the check never appears on the PR, the system is still broken.
-
----
-
-## Problem: Duplicate checks appear
-
-### Root cause
-Usually old invalid required checks remain in the ruleset while canonical checks were added later.
-
-### Corrective action
-
-Remove stale entries and leave only the canonical required checks.
-
-### Failure checkpoint
-
-If both old and new names appear in enforcement expectations, ruleset cleanup is incomplete.
-
----
-
-## Problem: Wrong source configured
-
-### Root cause
-GitHub requires not just the correct check name, but also the correct source.
-
-### Corrective action
-
-Use these exact mappings:
-
-- `ci / validate-files` → GitHub Actions
-- `Code scanning results / CodeQL` → GitHub Advanced Security
-- `Code scanning results / Trivy` → GitHub Advanced Security
-- `semgrep` → GitHub Actions
-- `readiness-check` → GitHub Actions
-
-### Failure checkpoint
-
-If the name matches but the source does not, the check will remain blocked or expected.
-
----
-
-## Problem: PR still blocked after ruleset fix
-
-### Root cause
-The PR may still be using stale evaluation state.
-
-### Corrective action
-
-Trigger a fresh evaluation:
-
-1. Update branch
-2. Rebase branch
-3. Close and reopen PR
-
-### Verification
-
-Expected passing checks:
-
-- `ci / validate-files`
-- `Code scanning results / CodeQL`
-- `Code scanning results / Trivy`
-- `semgrep`
-- `readiness-check`
-
-Expected merge state:
-
-- merge button enabled
-
----
-
-## Escalation Rule
-
-Only consider workflow renaming if all of the following are true:
-
-1. ruleset names exactly match emitted checks
-2. ruleset sources exactly match emitted sources
-3. PR has been freshly re-evaluated
-4. mismatch still persists
-
-Until then, treat this as a ruleset/check synchronization issue, not a workflow naming redesign issue.
+## 8. Future assistant drift
+If a future assistant proposes changing DEOS:
+1. read all files in `docs/deos/`
+2. inspect actual GitHub runtime state
+3. distinguish architecture from configuration bugs
+4. avoid redesign unless the current system is proven structurally wrong
