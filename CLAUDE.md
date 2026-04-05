@@ -1,4 +1,5 @@
 # DEOS Project Operating Rules
+- Before proposing any structural workflow change, read all files under `docs/deos/` and treat them as the primary DEOS specification.
 
 ## System model
 - GitHub is the live execution source of truth.
